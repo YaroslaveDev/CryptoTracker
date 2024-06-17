@@ -11,6 +11,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.rememberNavController
+import com.pfv.cryptotracker.ui.navigation.MainAppNavigation
 import com.pfv.cryptotracker.ui.theme.CryptoTrackerTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -22,12 +24,16 @@ class MainActivity : ComponentActivity() {
             CryptoTrackerTheme {
 
                 enableEdgeToEdge()
+                val navHostController = rememberNavController()
 
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
 
+                    MainAppNavigation(
+                        navHostController = navHostController
+                    )
                 }
             }
         }
