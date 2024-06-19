@@ -1,12 +1,13 @@
 package com.pfv.cryptotracker.data.dto
 
+import com.google.gson.annotations.SerializedName
 import kotlinx.serialization.SerialName
 
 data class CryptoCurrencyDto(
-    @SerialName("code")
+    @SerializedName("code")
     val code: String?,
-    @SerialName("rate")
+    @SerializedName("rate")
     val rate: String?,
-    @SerialName("rate_float")
+    @SerializedName("rate_float")
     val rateFloat: Float?
 )

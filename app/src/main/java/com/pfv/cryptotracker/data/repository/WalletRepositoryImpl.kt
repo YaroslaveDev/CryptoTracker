@@ -36,9 +36,11 @@ class WalletRepositoryImpl @Inject constructor(
     override suspend fun cacheBitcoinState(bitcoinState: NetworkEntity) {
 
         localDb.withTransaction {
-            localDb.walletDao().updateCurrentBitcoinState(bitcoinState as BitcoinStateEntity)
+            localDb.walletDao().updateCurrentBitcoinState(
+                walletMapper.bitcoinStateDvoToDbo(
+                    bitcoinState as CurrentBitcoinStateDvo
+                )
+            )
         }
     }
-
-
 }

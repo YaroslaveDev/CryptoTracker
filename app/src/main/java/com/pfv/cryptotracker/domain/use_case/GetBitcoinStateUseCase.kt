@@ -1,6 +1,7 @@
 package com.pfv.cryptotracker.domain.use_case
 
 import com.bumptech.glide.load.engine.Resource
+import com.pfv.cryptotracker.data.dvo.CurrentBitcoinStateDvo
 import com.pfv.cryptotracker.domain.NetworkEntity
 import com.pfv.cryptotracker.domain.ResultState
 import com.pfv.cryptotracker.domain.repository.WalletRepository
@@ -22,7 +23,9 @@ class GetBitcoinStateUseCase  @Inject constructor(
             is ResultState.Success -> {
 
                 currentState.data?.let {
-                    repository.cacheBitcoinState(it)
+                    repository.cacheBitcoinState(
+                        (it as CurrentBitcoinStateDvo)
+                    )
                 }
 
                 emit(ResultState.Success(currentState.data))

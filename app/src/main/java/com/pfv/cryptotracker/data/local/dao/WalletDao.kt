@@ -13,12 +13,12 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface WalletDao {
     @Query("SELECT * FROM balance WHERE id = 1")
-    suspend fun getBalance(): Flow<BalanceEntity>
+    fun getBalance(): Flow<BalanceEntity>
 
     @Query("SELECT * FROM bitcoin_state WHERE id = 1")
-    suspend fun getCurrentBitcoinState(): Flow<BitcoinStateEntity>
+    fun getCurrentBitcoinState(): Flow<BitcoinStateEntity>
 
-    @Update
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun updateCurrentBitcoinState(stateEntity: BitcoinStateEntity)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

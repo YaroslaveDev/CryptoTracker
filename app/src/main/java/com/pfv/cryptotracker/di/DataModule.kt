@@ -21,8 +21,14 @@ class DataModule {
 
     @Provides
     @Singleton
-    fun provideBitcoinCurrentStateApi(retrofit: Retrofit): BitcoinStateService =
+    fun provideBitcoinCurrentStateService(retrofit: Retrofit): BitcoinStateService =
         retrofit.create(BitcoinStateService::class.java)
+
+    @Provides
+    @Singleton
+    fun provideDatabase(app: Application) : WalletDatabase =
+        Room.databaseBuilder(app, WalletDatabase::class.java, WALLET_DATABASE)
+            .build()
 
     @Provides
     @Singleton
@@ -32,11 +38,5 @@ class DataModule {
         walletMapper: WalletMapper
     ): WalletRepository =
         WalletRepositoryImpl(service, localDb, walletMapper)
-
-    @Provides
-    @Singleton
-    fun provideDatabase(app: Application) : WalletDatabase =
-        Room.databaseBuilder(app, WalletDatabase::class.java, WALLET_DATABASE)
-            .build()
 
 }
