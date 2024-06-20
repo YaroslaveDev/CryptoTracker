@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface WalletDao {
     @Query("SELECT * FROM balance WHERE id = 1")
-    fun getBalance(): Flow<BalanceEntity>
+    fun getBalance(): Flow<BalanceEntity?>
 
     @Query("SELECT * FROM bitcoin_state WHERE id = 1")
     fun getCurrentBitcoinState(): Flow<BitcoinStateEntity?>
@@ -24,7 +24,7 @@ interface WalletDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertBalance(balance: BalanceEntity)
 
-    @Query("SELECT * FROM `transaction` ORDER BY timestamp DESC LIMIT :limit OFFSET :offset")
+    @Query("SELECT * FROM `transaction` ORDER BY createdAt DESC LIMIT :limit OFFSET :offset")
     suspend fun getTransactions(limit: Int, offset: Int): List<TransactionEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

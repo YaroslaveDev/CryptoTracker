@@ -7,8 +7,10 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.pfv.cryptotracker.data.dvo.CurrentBitcoinStateDvo
+import com.pfv.cryptotracker.data.dvo.WalletBalanceDvo
 import com.pfv.cryptotracker.domain.ResultState
 import com.pfv.cryptotracker.domain.use_case.GetBitcoinStateUseCase
+import com.pfv.cryptotracker.domain.use_case.WalletBalanceOperationsUseCase
 import com.pfv.cryptotracker.ui.screens.wallet_info_screen.data_state.WalletInfoDataState
 import com.pfv.cryptotracker.ui.screens.wallet_info_screen.event.WalletScreenEvent
 import com.pfv.cryptotracker.ui.screens.wallet_info_screen.form.WalletInfoScreenForm
@@ -23,7 +25,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class WalletInfoScreenViewModel @Inject constructor(
-    private val getBitcoinStateUseCase: GetBitcoinStateUseCase
+    private val getBitcoinStateUseCase: GetBitcoinStateUseCase,
+    private val walletBalanceOperationsUseCase: WalletBalanceOperationsUseCase
 ) : ViewModel() {
 
     var screeState by mutableStateOf<WalletInfoScreenState>(WalletInfoScreenState.EmptyState)
@@ -38,7 +41,7 @@ class WalletInfoScreenViewModel @Inject constructor(
             WalletScreenEvent.SetDeposit -> updateUiState(WalletInfoScreenUiState.MakeDepositPopup)
             WalletScreenEvent.StartTransaction -> {}
             WalletScreenEvent.OnSetNewDepositValue -> {
-
+                setNewDepositValue()
             }
             is WalletScreenEvent.UpdateDepositValue -> updateDepositValue(event.value)
         }
@@ -70,8 +73,43 @@ class WalletInfoScreenViewModel @Inject constructor(
         }
     }
 
+    fun getWalletBalance(){
+
+        viewModelScope.launch {
+
+            walletBalanceOperationsUseCase.getWalletBalance().collect {
+
+                when(it){
+                    is ResultState.Success -> {
+
+                        val data = it.data as WalletBalanceDvo
+
+                        dataState = dataState.copy(
+                            walletBalance = data.value
+                        )
+                    }
+                    is ResultState.Error -> {
+                        updateUiState(
+                            WalletInfoScreenUiState.Error(it.errorDvo.errorMessage.orEmpty())
+                        )
+                    }
+                }
+            }
+        }
+    }
+
     private fun setNewDepositValue() {
 
+        viewModelScope.launch {
+
+            walletBalanceOperationsUseCase.updateWalletBalance(
+                walletBalanceDvo = WalletBalanceDvo(
+                    value = form.depositInputValue.toDouble() + dataState.walletBalance
+                )
+            )
+
+            clearForm()
+        }
     }
 
     private fun updateDepositValue(value: String){

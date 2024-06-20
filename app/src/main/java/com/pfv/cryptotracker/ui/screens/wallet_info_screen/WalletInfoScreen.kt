@@ -38,6 +38,7 @@ fun WalletInfoScreen(
     LaunchedEffect(Unit){
 
         viewModel.getBitcoinState()
+        viewModel.getWalletBalance()
     }
 
     Scaffold(
@@ -65,7 +66,7 @@ fun WalletInfoScreen(
                 modifier = Modifier
                     .padding(top = 20.dp),
                 context = context,
-                currentBalance = 0.5555111
+                currentBalance = viewModel.dataState.walletBalance
             )
 
             WalletActionsSection(
@@ -107,6 +108,7 @@ fun WalletInfoScreen(
                     },
                     onMakeDeposit = {
                         viewModel.reduceEvent(WalletScreenEvent.OnSetNewDepositValue)
+                        viewModel.resetUiState()
                     },
                     onDismiss = {
                         viewModel.resetUiState()

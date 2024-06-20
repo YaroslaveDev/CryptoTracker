@@ -4,6 +4,8 @@ import com.pfv.cryptotracker.data.dto.CurrentBitcoinStateDto
 import com.pfv.cryptotracker.data.dvo.CryptoCurrenciesDvo
 import com.pfv.cryptotracker.data.dvo.CryptoCurrencyDvo
 import com.pfv.cryptotracker.data.dvo.CurrentBitcoinStateDvo
+import com.pfv.cryptotracker.data.dvo.WalletBalanceDvo
+import com.pfv.cryptotracker.data.local.entity.BalanceEntity
 import com.pfv.cryptotracker.data.local.entity.BitcoinStateEntity
 import com.pfv.cryptotracker.ui.ext.isNotNull
 import com.pfv.cryptotracker.ui.ext.isNull
@@ -52,5 +54,17 @@ class WalletMapper @Inject constructor(){
         )
     }
 
+    fun walletBalanceDboToDvo(data: BalanceEntity?): WalletBalanceDvo {
 
+        return WalletBalanceDvo(
+            value = data?.amount ?: 100.0
+        )
+    }
+
+    fun walletBalanceDvoToDbo(data: WalletBalanceDvo) : BalanceEntity {
+
+        return BalanceEntity(
+            amount = data.value
+        )
+    }
 }

@@ -10,4 +10,6 @@ interface WalletRepository {
     suspend fun getRemoteBitcoinState() : ResultState<NetworkEntity>
     suspend fun getLocalBitcoinState() : Flow<NetworkEntity?>
     suspend fun cacheBitcoinState(bitcoinState: NetworkEntity)
+    suspend fun getWalletBalance() : Flow<NetworkEntity?>
+    suspend fun updateWalletBalance(walletBalance: NetworkEntity)
 }

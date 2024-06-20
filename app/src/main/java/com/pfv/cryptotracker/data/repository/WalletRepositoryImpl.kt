@@ -2,6 +2,7 @@ package com.pfv.cryptotracker.data.repository
 
 import androidx.room.withTransaction
 import com.pfv.cryptotracker.data.dvo.CurrentBitcoinStateDvo
+import com.pfv.cryptotracker.data.dvo.WalletBalanceDvo
 import com.pfv.cryptotracker.data.local.database.WalletDatabase
 import com.pfv.cryptotracker.data.local.entity.BitcoinStateEntity
 import com.pfv.cryptotracker.data.mapper.WalletMapper
@@ -39,6 +40,25 @@ class WalletRepositoryImpl @Inject constructor(
             localDb.walletDao().updateCurrentBitcoinState(
                 walletMapper.bitcoinStateDvoToDbo(
                     bitcoinState as CurrentBitcoinStateDvo
+                )
+            )
+        }
+    }
+
+    override suspend fun getWalletBalance(): Flow<NetworkEntity?> = flow {
+
+        localDb.walletDao().getBalance().collect {
+            emit(
+                walletMapper.walletBalanceDboToDvo(it)
+            )
+        }
+    }
+
+    override suspend fun updateWalletBalance(walletBalance: NetworkEntity) {
+        localDb.withTransaction {
+            localDb.walletDao().insertBalance(
+                walletMapper.walletBalanceDvoToDbo(
+                    walletBalance as WalletBalanceDvo
                 )
             )
         }
