@@ -25,7 +25,7 @@ class WalletRepositoryImpl @Inject constructor(
         return service.getCurrentBitcoinState().toResultState { walletMapper.bitcoinStateDtoToDvo(it) }
     }
 
-    override suspend fun getLocalBitcoinState(): Flow<CurrentBitcoinStateDvo> = flow {
+    override suspend fun getLocalBitcoinState(): Flow<CurrentBitcoinStateDvo?> = flow {
 
         localDb.walletDao().getCurrentBitcoinState().collect {
 

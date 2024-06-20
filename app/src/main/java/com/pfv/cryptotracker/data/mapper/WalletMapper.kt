@@ -5,6 +5,9 @@ import com.pfv.cryptotracker.data.dvo.CryptoCurrenciesDvo
 import com.pfv.cryptotracker.data.dvo.CryptoCurrencyDvo
 import com.pfv.cryptotracker.data.dvo.CurrentBitcoinStateDvo
 import com.pfv.cryptotracker.data.local.entity.BitcoinStateEntity
+import com.pfv.cryptotracker.ui.ext.isNotNull
+import com.pfv.cryptotracker.ui.ext.isNull
+import java.util.Calendar
 import javax.inject.Inject
 
 class WalletMapper @Inject constructor(){
@@ -18,21 +21,25 @@ class WalletMapper @Inject constructor(){
                     rate = data?.bitcoinCurrencies?.usd?.rate.orEmpty(),
                     rateFloat = data?.bitcoinCurrencies?.usd?.rateFloat ?: 0f,
                 )
-            )
+            ),
+            updatedAt = Calendar.getInstance().time
         )
     }
 
-    fun bitcoinStateDboToDvo(data: BitcoinStateEntity): CurrentBitcoinStateDvo {
+    fun bitcoinStateDboToDvo(data: BitcoinStateEntity?): CurrentBitcoinStateDvo? {
 
-        return CurrentBitcoinStateDvo(
-            cryptoCurrenciesDvo = CryptoCurrenciesDvo(
-                usd = CryptoCurrencyDvo(
-                    code = data.code,
-                    rate = data.rate,
-                    rateFloat = data.rateFloat,
-                )
+        return if (data.isNotNull())
+            CurrentBitcoinStateDvo(
+                cryptoCurrenciesDvo = CryptoCurrenciesDvo(
+                    usd = CryptoCurrencyDvo(
+                        code = data!!.code,
+                        rate = data.rate,
+                        rateFloat = data.rateFloat,
+                    )
+                ),
+                updatedAt = Calendar.getInstance().time
             )
-        )
+        else null
     }
 
     fun bitcoinStateDvoToDbo(data: CurrentBitcoinStateDvo): BitcoinStateEntity {
@@ -41,6 +48,7 @@ class WalletMapper @Inject constructor(){
             code = data.cryptoCurrenciesDvo.usd.code,
             rate = data.cryptoCurrenciesDvo.usd.rate,
             rateFloat = data.cryptoCurrenciesDvo.usd.rateFloat,
+            updatedAt = Calendar.getInstance().time
         )
     }
 

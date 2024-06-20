@@ -8,6 +8,6 @@ import kotlinx.coroutines.flow.Flow
 interface WalletRepository {
 
     suspend fun getRemoteBitcoinState() : ResultState<NetworkEntity>
-    suspend fun getLocalBitcoinState() : Flow<NetworkEntity>
+    suspend fun getLocalBitcoinState() : Flow<NetworkEntity?>
     suspend fun cacheBitcoinState(bitcoinState: NetworkEntity)
 }

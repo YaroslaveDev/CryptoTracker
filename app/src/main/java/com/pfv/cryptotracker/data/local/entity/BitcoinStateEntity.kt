@@ -5,6 +5,7 @@ import androidx.room.PrimaryKey
 import com.pfv.cryptotracker.data.constants.LocalStorageConstants
 import com.pfv.cryptotracker.domain.NetworkEntity
 import kotlinx.serialization.SerialName
+import java.util.Date
 
 @Entity(tableName = LocalStorageConstants.BITCOIN_STATE)
 data class BitcoinStateEntity(
@@ -12,5 +13,6 @@ data class BitcoinStateEntity(
     val id: Int = 1,
     val code: String,
     val rate: String,
-    val rateFloat: Float
+    val rateFloat: Float,
+    val updatedAt: Date
 ) : NetworkEntity

@@ -16,7 +16,7 @@ interface WalletDao {
     fun getBalance(): Flow<BalanceEntity>
 
     @Query("SELECT * FROM bitcoin_state WHERE id = 1")
-    fun getCurrentBitcoinState(): Flow<BitcoinStateEntity>
+    fun getCurrentBitcoinState(): Flow<BitcoinStateEntity?>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun updateCurrentBitcoinState(stateEntity: BitcoinStateEntity)
