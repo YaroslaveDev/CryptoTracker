@@ -17,6 +17,7 @@ import com.pfv.cryptotracker.constants.CryptoTypes
 import com.pfv.cryptotracker.data.dvo.CryptoInfoDvo
 import com.pfv.cryptotracker.ui.base.popups.NoInternetConnectionDialog
 import com.pfv.cryptotracker.ui.base.setup.BaseAppSetupAnimation
+import com.pfv.cryptotracker.ui.navigation.Screen
 import com.pfv.cryptotracker.ui.screens.wallet_info_screen.components.MakeDepositPopup
 import com.pfv.cryptotracker.ui.screens.wallet_info_screen.components.WalletActionsSection
 import com.pfv.cryptotracker.ui.screens.wallet_info_screen.components.WalletInfoEmptyState
@@ -35,7 +36,7 @@ fun WalletInfoScreen(
 
     val context = LocalContext.current
 
-    LaunchedEffect(Unit){
+    LaunchedEffect(Unit) {
 
         viewModel.getBitcoinState()
         viewModel.getWalletBalance()
@@ -75,7 +76,7 @@ fun WalletInfoScreen(
                 onEvent = viewModel::reduceEvent
             )
 
-            when(viewModel.screeState){
+            when (viewModel.screeState) {
                 WalletInfoScreenState.EmptyState -> {
                     WalletInfoEmptyState(
                         modifier = Modifier
@@ -83,6 +84,7 @@ fun WalletInfoScreen(
                             .weight(1f)
                     )
                 }
+
                 WalletInfoScreenState.SetupState -> {
                     BaseAppSetupAnimation(
                         modifier = Modifier
@@ -90,13 +92,14 @@ fun WalletInfoScreen(
                             .weight(1f)
                     )
                 }
+
                 WalletInfoScreenState.SuccessState -> {
 
                 }
             }
         }
 
-        when(val state = viewModel.uiState){
+        when (val state = viewModel.uiState) {
             is WalletInfoScreenUiState.Error -> {}
             WalletInfoScreenUiState.InitState -> {}
             WalletInfoScreenUiState.MakeDepositPopup -> {
@@ -116,6 +119,7 @@ fun WalletInfoScreen(
                     }
                 )
             }
+
             WalletInfoScreenUiState.NoInternetConnection -> {
                 NoInternetConnectionDialog(
                     onClose = {
@@ -123,18 +127,19 @@ fun WalletInfoScreen(
                     }
                 )
             }
+
             WalletInfoScreenUiState.SetupState -> {
                 BaseAppSetupAnimation(modifier = Modifier.fillMaxSize())
             }
         }
     }
 
-    LaunchedEffect(viewModel.navState){
+    LaunchedEffect(viewModel.navState) {
 
-        when(val state = viewModel.navState){
+        when (val state = viewModel.navState) {
             WalletInfoScreenNavState.InitState -> {}
             WalletInfoScreenNavState.NavToMakeTransactionScreen -> {
-
+                navController.navigate(Screen.CreateTransactionScreen(walletBalance = viewModel.dataState.walletBalance.toString()))
                 viewModel.resetNavState()
             }
         }

@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.toRoute
 import com.pfv.cryptotracker.ui.screens.create_transaction_screen.CreateTransactionScreen
 import com.pfv.cryptotracker.ui.screens.splash_screen.SplashScreen
 import com.pfv.cryptotracker.ui.screens.wallet_info_screen.WalletInfoScreen
@@ -26,8 +27,14 @@ fun MainAppNavigation(
             WalletInfoScreen(navController = navHostController)
         }
 
-        composable<Screen.CreateTransactionScreen> {
-            CreateTransactionScreen(navController = navHostController)
+        composable<Screen.CreateTransactionScreen> {backStackEntry ->
+
+            val walletBalance = backStackEntry.toRoute<Screen.CreateTransactionScreen>().walletBalance
+
+            CreateTransactionScreen(
+                walletBalance = walletBalance.toDouble(),
+                navController = navHostController
+            )
         }
     }
 }

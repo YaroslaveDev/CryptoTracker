@@ -1,5 +1,6 @@
 package com.pfv.cryptotracker.domain.use_case
 
+import com.pfv.cryptotracker.data.dvo.TransactionDvo
 import com.pfv.cryptotracker.data.dvo.TransactionsDvo
 import com.pfv.cryptotracker.data.dvo.WalletBalanceDvo
 import com.pfv.cryptotracker.domain.NetworkEntity
@@ -13,8 +14,8 @@ class TransactionsOperationsUseCase @Inject constructor(
     private val repository: WalletRepository,
 ) {
 
-    suspend fun makeTransaction(transactionsDvo: TransactionsDvo) {
+    suspend fun makeTransaction(transaction: TransactionDvo) {
 
-        repository.makeTransaction(transaction = transactionsDvo)
+        repository.makeTransaction(transaction = transaction)
     }
 }

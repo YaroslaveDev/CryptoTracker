@@ -6,11 +6,18 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.pfv.cryptotracker.constants.CryptoTypes
+import com.pfv.cryptotracker.constants.TransactionCategory
+import com.pfv.cryptotracker.constants.TransactionType
+import com.pfv.cryptotracker.data.dvo.CryptoInfoDvo
 import com.pfv.cryptotracker.data.dvo.CurrentBitcoinStateDvo
+import com.pfv.cryptotracker.data.dvo.TransactionDvo
 import com.pfv.cryptotracker.data.dvo.WalletBalanceDvo
 import com.pfv.cryptotracker.domain.ResultState
 import com.pfv.cryptotracker.domain.use_case.GetBitcoinStateUseCase
+import com.pfv.cryptotracker.domain.use_case.TransactionsOperationsUseCase
 import com.pfv.cryptotracker.domain.use_case.WalletBalanceOperationsUseCase
+import com.pfv.cryptotracker.ui.screens.create_transaction_screen.nav_state.CreateTransactionNavState
 import com.pfv.cryptotracker.ui.screens.wallet_info_screen.data_state.WalletInfoDataState
 import com.pfv.cryptotracker.ui.screens.wallet_info_screen.event.WalletScreenEvent
 import com.pfv.cryptotracker.ui.screens.wallet_info_screen.form.WalletInfoScreenForm
@@ -21,12 +28,14 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import java.util.Calendar
 import javax.inject.Inject
 
 @HiltViewModel
 class WalletInfoScreenViewModel @Inject constructor(
     private val getBitcoinStateUseCase: GetBitcoinStateUseCase,
-    private val walletBalanceOperationsUseCase: WalletBalanceOperationsUseCase
+    private val walletBalanceOperationsUseCase: WalletBalanceOperationsUseCase,
+    private val transactionsOperationsUseCase: TransactionsOperationsUseCase
 ) : ViewModel() {
 
     var screeState by mutableStateOf<WalletInfoScreenState>(WalletInfoScreenState.EmptyState)
@@ -39,9 +48,9 @@ class WalletInfoScreenViewModel @Inject constructor(
 
         when(event){
             WalletScreenEvent.SetDeposit -> updateUiState(WalletInfoScreenUiState.MakeDepositPopup)
-            WalletScreenEvent.StartTransaction -> {}
+            WalletScreenEvent.StartTransaction -> updateNavState(WalletInfoScreenNavState.NavToMakeTransactionScreen)
             WalletScreenEvent.OnSetNewDepositValue -> {
-                setNewDepositValue()
+                makeTransaction()
             }
             is WalletScreenEvent.UpdateDepositValue -> updateDepositValue(event.value)
         }
@@ -95,6 +104,27 @@ class WalletInfoScreenViewModel @Inject constructor(
                     }
                 }
             }
+        }
+    }
+
+    private fun makeTransaction() {
+
+        viewModelScope.launch {
+
+            transactionsOperationsUseCase.makeTransaction(
+                transaction = TransactionDvo(
+                    category = TransactionCategory.OTHER,
+                    date = Calendar.getInstance().time,
+                    cryptoInfo = CryptoInfoDvo(
+                        type = CryptoTypes.BTC,
+                        value = form.depositInputValue.toDouble()
+                    ),
+                    transactionType = TransactionType.DEPOSIT
+                )
+            )
+
+            setNewDepositValue()
+
         }
     }
 

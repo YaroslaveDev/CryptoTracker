@@ -17,6 +17,6 @@ sealed interface Screen {
     data object WalletInfoScreen : Screen
 
     @Serializable
-    data object CreateTransactionScreen : Screen
+    data class CreateTransactionScreen(val walletBalance: String) : Screen
 
 }
