@@ -25,7 +25,7 @@ interface WalletDao {
     suspend fun insertBalance(balance: BalanceEntity)
 
     @Query("SELECT * FROM `transaction` ORDER BY createdAt DESC LIMIT :limit OFFSET :offset")
-    suspend fun getTransactions(limit: Int, offset: Int): List<TransactionEntity>
+    fun getTransactions(limit: Int, offset: Int): Flow<List<TransactionEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertTransaction(transaction: TransactionEntity)

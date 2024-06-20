@@ -2,6 +2,7 @@ package com.pfv.cryptotracker.di
 
 import com.pfv.cryptotracker.domain.repository.WalletRepository
 import com.pfv.cryptotracker.domain.use_case.GetBitcoinStateUseCase
+import com.pfv.cryptotracker.domain.use_case.TransactionsOperationsUseCase
 import com.pfv.cryptotracker.domain.use_case.WalletBalanceOperationsUseCase
 import dagger.Module
 import dagger.Provides
@@ -19,5 +20,9 @@ class DomainModule {
     @Provides
     fun provideWalletBalanceOperationsUseCase(walletRepository: WalletRepository) =
         WalletBalanceOperationsUseCase(repository = walletRepository)
+
+    @Provides
+    fun provideTransactionsOperationsUseCase(walletRepository: WalletRepository) =
+        TransactionsOperationsUseCase(repository = walletRepository)
 
 }

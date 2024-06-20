@@ -2,6 +2,8 @@ package com.pfv.cryptotracker.data.repository
 
 import androidx.room.withTransaction
 import com.pfv.cryptotracker.data.dvo.CurrentBitcoinStateDvo
+import com.pfv.cryptotracker.data.dvo.TransactionDvo
+import com.pfv.cryptotracker.data.dvo.TransactionsDvo
 import com.pfv.cryptotracker.data.dvo.WalletBalanceDvo
 import com.pfv.cryptotracker.data.local.database.WalletDatabase
 import com.pfv.cryptotracker.data.local.entity.BitcoinStateEntity
@@ -23,7 +25,8 @@ class WalletRepositoryImpl @Inject constructor(
 ) : WalletRepository {
 
     override suspend fun getRemoteBitcoinState(): ResultState<NetworkEntity> {
-        return service.getCurrentBitcoinState().toResultState { walletMapper.bitcoinStateDtoToDvo(it) }
+        return service.getCurrentBitcoinState()
+            .toResultState { walletMapper.bitcoinStateDtoToDvo(it) }
     }
 
     override suspend fun getLocalBitcoinState(): Flow<CurrentBitcoinStateDvo?> = flow {
@@ -59,6 +62,26 @@ class WalletRepositoryImpl @Inject constructor(
             localDb.walletDao().insertBalance(
                 walletMapper.walletBalanceDvoToDbo(
                     walletBalance as WalletBalanceDvo
+                )
+            )
+        }
+    }
+
+    override suspend fun makeTransaction(transaction: NetworkEntity) {
+        localDb.withTransaction {
+            localDb.walletDao().insertTransaction(
+                transaction = walletMapper.transactionDvoToDbo(transaction as TransactionDvo)
+            )
+        }
+    }
+
+    override suspend fun getAllTransactions(): Flow<NetworkEntity> = flow {
+
+        localDb.walletDao().getTransactions(limit = 50, offset = 20).collect {
+
+            emit(
+                TransactionsDvo(
+                    transactions = it.map { walletMapper.transactionDboToDvo(it) }
                 )
             )
         }
