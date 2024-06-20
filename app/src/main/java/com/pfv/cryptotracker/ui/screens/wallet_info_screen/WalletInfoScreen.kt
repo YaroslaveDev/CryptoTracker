@@ -35,6 +35,11 @@ fun WalletInfoScreen(
 
     val context = LocalContext.current
 
+    LaunchedEffect(Unit){
+
+        viewModel.getBitcoinState()
+    }
+
     Scaffold(
         modifier = Modifier
             .fillMaxSize(),
@@ -44,7 +49,7 @@ fun WalletInfoScreen(
                 context = context,
                 cryptoInfo = CryptoInfoDvo(
                     type = CryptoTypes.BTC,
-                    value = 60.1959121
+                    value = viewModel.dataState.currentBitcoinState
                 )
             )
         }

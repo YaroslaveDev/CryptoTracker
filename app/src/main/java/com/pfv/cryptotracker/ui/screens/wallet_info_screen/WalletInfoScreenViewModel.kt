@@ -6,8 +6,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.pfv.cryptotracker.data.dvo.CurrentBitcoinStateDvo
 import com.pfv.cryptotracker.domain.ResultState
 import com.pfv.cryptotracker.domain.use_case.GetBitcoinStateUseCase
+import com.pfv.cryptotracker.ui.screens.wallet_info_screen.data_state.WalletInfoDataState
 import com.pfv.cryptotracker.ui.screens.wallet_info_screen.event.WalletScreenEvent
 import com.pfv.cryptotracker.ui.screens.wallet_info_screen.form.WalletInfoScreenForm
 import com.pfv.cryptotracker.ui.screens.wallet_info_screen.nav_state.WalletInfoScreenNavState
@@ -28,7 +30,7 @@ class WalletInfoScreenViewModel @Inject constructor(
     var uiState by mutableStateOf<WalletInfoScreenUiState>(WalletInfoScreenUiState.InitState)
     var navState by mutableStateOf<WalletInfoScreenNavState>(WalletInfoScreenNavState.InitState)
     var form by mutableStateOf(WalletInfoScreenForm())
-    var walletBalance by mutableStateOf(0.0)
+    var dataState by mutableStateOf(WalletInfoDataState())
 
     fun reduceEvent(event: WalletScreenEvent){
 
@@ -42,7 +44,7 @@ class WalletInfoScreenViewModel @Inject constructor(
         }
     }
 
-    private fun getBitcoinState(){
+    fun getBitcoinState(){
 
         viewModelScope.launch {
 
@@ -50,10 +52,18 @@ class WalletInfoScreenViewModel @Inject constructor(
 
                 when(it){
                     is ResultState.Error -> {
-                        Log.i("dddddd", it.errorDvo.errorMessage.toString())
+                        updateUiState(
+                            WalletInfoScreenUiState.Error(it.errorDvo.errorMessage.orEmpty())
+                        )
                     }
                     is ResultState.Success -> {
-                        Log.i("dddddd", it.data.toString())
+
+                        val data = it.data as CurrentBitcoinStateDvo
+
+                        dataState = dataState.copy(
+                            currentBitcoinState = data.cryptoCurrenciesDvo.usd.rateFloat.toDouble(),
+                            currentBitcoinStateString = data.cryptoCurrenciesDvo.usd.rate
+                        )
                     }
                 }
             }
