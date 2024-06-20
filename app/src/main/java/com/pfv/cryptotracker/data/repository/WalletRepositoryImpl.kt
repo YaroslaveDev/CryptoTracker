@@ -1,5 +1,6 @@
 package com.pfv.cryptotracker.data.repository
 
+import androidx.paging.PagingSource
 import androidx.room.withTransaction
 import com.pfv.cryptotracker.data.dvo.CurrentBitcoinStateDvo
 import com.pfv.cryptotracker.data.dvo.TransactionDvo
@@ -7,6 +8,7 @@ import com.pfv.cryptotracker.data.dvo.TransactionsDvo
 import com.pfv.cryptotracker.data.dvo.WalletBalanceDvo
 import com.pfv.cryptotracker.data.local.database.WalletDatabase
 import com.pfv.cryptotracker.data.local.entity.BitcoinStateEntity
+import com.pfv.cryptotracker.data.local.entity.TransactionEntity
 import com.pfv.cryptotracker.data.mapper.WalletMapper
 import com.pfv.cryptotracker.data.remote.api.BitcoinStateService
 import com.pfv.cryptotracker.data.remote.network.toResultState
@@ -75,15 +77,8 @@ class WalletRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getAllTransactions(): Flow<NetworkEntity> = flow {
+    override fun getAllTransactions(): PagingSource<Int, TransactionEntity> {
 
-        localDb.walletDao().getTransactions(limit = 50, offset = 20).collect {
-
-            emit(
-                TransactionsDvo(
-                    transactions = it.map { walletMapper.transactionDboToDvo(it) }
-                )
-            )
-        }
+        return localDb.walletDao().getTransactions()
     }
 }

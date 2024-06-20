@@ -1,6 +1,8 @@
 package com.pfv.cryptotracker.domain.repository
 
+import androidx.paging.PagingSource
 import com.pfv.cryptotracker.data.local.entity.BitcoinStateEntity
+import com.pfv.cryptotracker.data.local.entity.TransactionEntity
 import com.pfv.cryptotracker.domain.NetworkEntity
 import com.pfv.cryptotracker.domain.ResultState
 import kotlinx.coroutines.flow.Flow
@@ -13,5 +15,5 @@ interface WalletRepository {
     suspend fun getWalletBalance() : Flow<NetworkEntity?>
     suspend fun updateWalletBalance(walletBalance: NetworkEntity)
     suspend fun makeTransaction(transaction: NetworkEntity)
-    suspend fun getAllTransactions() : Flow<NetworkEntity>
+    fun getAllTransactions() : PagingSource<Int, TransactionEntity>
 }

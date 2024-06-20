@@ -6,6 +6,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import com.pfv.cryptotracker.constants.CryptoTypes
 import com.pfv.cryptotracker.constants.TransactionCategory
 import com.pfv.cryptotracker.constants.TransactionType
@@ -13,6 +17,7 @@ import com.pfv.cryptotracker.data.dvo.CryptoInfoDvo
 import com.pfv.cryptotracker.data.dvo.CurrentBitcoinStateDvo
 import com.pfv.cryptotracker.data.dvo.TransactionDvo
 import com.pfv.cryptotracker.data.dvo.WalletBalanceDvo
+import com.pfv.cryptotracker.data.local.entity.TransactionEntity
 import com.pfv.cryptotracker.domain.ResultState
 import com.pfv.cryptotracker.domain.use_case.GetBitcoinStateUseCase
 import com.pfv.cryptotracker.domain.use_case.TransactionsOperationsUseCase
@@ -25,6 +30,7 @@ import com.pfv.cryptotracker.ui.screens.wallet_info_screen.nav_state.WalletInfoS
 import com.pfv.cryptotracker.ui.screens.wallet_info_screen.screen_state.WalletInfoScreenState
 import com.pfv.cryptotracker.ui.screens.wallet_info_screen.ui_state.WalletInfoScreenUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -38,11 +44,16 @@ class WalletInfoScreenViewModel @Inject constructor(
     private val transactionsOperationsUseCase: TransactionsOperationsUseCase
 ) : ViewModel() {
 
-    var screeState by mutableStateOf<WalletInfoScreenState>(WalletInfoScreenState.EmptyState)
+    var screeState by mutableStateOf<WalletInfoScreenState>(WalletInfoScreenState.SetupState)
     var uiState by mutableStateOf<WalletInfoScreenUiState>(WalletInfoScreenUiState.InitState)
     var navState by mutableStateOf<WalletInfoScreenNavState>(WalletInfoScreenNavState.InitState)
     var form by mutableStateOf(WalletInfoScreenForm())
     var dataState by mutableStateOf(WalletInfoDataState())
+
+    val transactions: Flow<PagingData<TransactionEntity>> = Pager(
+        config = PagingConfig(pageSize = 10, enablePlaceholders = false),
+        pagingSourceFactory = { transactionsOperationsUseCase.getAllTransactions() }
+    ).flow.cachedIn(viewModelScope)
 
     fun reduceEvent(event: WalletScreenEvent){
 
@@ -164,6 +175,14 @@ class WalletInfoScreenViewModel @Inject constructor(
         form = form.copy(
             depositInputValue = ""
         )
+    }
+
+    fun processScreenState(transactions: Int){
+        if (transactions == 0){
+            updateScreenState(WalletInfoScreenState.EmptyState)
+        }else{
+            updateScreenState(WalletInfoScreenState.SuccessState)
+        }
     }
 
     fun resetUiState() = updateUiState(WalletInfoScreenUiState.InitState)

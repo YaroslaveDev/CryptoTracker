@@ -1,5 +1,6 @@
 package com.pfv.cryptotracker.data.local.dao
 
+import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -24,8 +25,8 @@ interface WalletDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertBalance(balance: BalanceEntity)
 
-    @Query("SELECT * FROM `transaction` ORDER BY createdAt DESC LIMIT :limit OFFSET :offset")
-    fun getTransactions(limit: Int, offset: Int): Flow<List<TransactionEntity>>
+    @Query("SELECT * FROM `transaction` ORDER BY createdAt DESC")
+    fun getTransactions(): PagingSource<Int, TransactionEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertTransaction(transaction: TransactionEntity)
